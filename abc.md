@@ -1,413 +1,349 @@
-```python
-# ============================
-# PROGRAM 1
-# ============================
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-dataset = pd.read_csv("suv_data.csv")
-dataset.head()
-x = dataset.iloc[:,[2,3]].values
-y = dataset.iloc[:,4].values
-print (x)
-print (y)
-print(dataset[dataset.isnull().any(axis=1)])
-bool_series=pd.isnull(dataset["Gender"])
-dataset[bool_series]
-bool_series=pd.notnull(dataset["Gender"])
-dataset[bool_series]
-dataset[10:25]
-new_data=dataset.dropna(axis=0,how='any')
-new_data
-dataset.replace(to_replace=np.nan, value=-99)
-dataset["Gender"].fillna("No Gender")
-print("Old data frame length:", len(dataset))
-print("New data frame length:", len(new_data))
-print("Number of rows with at least 1 NA value:", len(dataset)-len(new_data))
-new_df1 = dataset.ffill()
-print(new_df1)
-new_df3=dataset.dropna(how='all')
-new_df3
-
-
-# ============================
-# PROGRAM 2
-# ============================
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-data = pd.read_csv('Titanic-Dataset.csv')
-print(data)
-x = data.drop('Survived', axis = 1)
-y = data['Survived']
-print(x)
-print(y)
-x.drop(['Name', 'Ticket', 'Cabin'],axis = 1, inplace = True)
-print(x)
-x['Age'] = x['Age'].fillna(x['Age'].mean())
-print(x)
-x['Embarked'] = x['Embarked'].fillna(x['Embarked'].mode()[0])
-print(x)
-x = pd.get_dummies(x, columns = ['Sex', 'Embarked'],prefix = ['Sex', 'Embarked'],drop_first = True)
-print(x)
-from sklearn.model_selection import train_test_split
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 0)
-print(x_train)
-print(y_train)
-from sklearn.preprocessing import StandardScaler
-std_x = StandardScaler()
-x_train = std_x.fit_transform(x_train)
-x_test = std_x.transform(x_test)
-print(x_train)
-
-
-# ============================
-# PROGRAM 3
-# ============================
-from pandas import read_csv
-from numpy import set_printoptions
-from sklearn.model_selection import train_test_split
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import f_classif
-from matplotlib import pyplot
-
-path = 'diabetes.csv'
-dataframe = read_csv(path)
-print(dataframe.head())
-
-y = dataframe['Outcome']
-x = dataframe.drop('Outcome', axis=1)
-feature_names = x.columns.tolist()
-
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=1)
-
-fs = SelectKBest(score_func=f_classif, k='all')
-fs.fit(x_train, y_train)
-
-x_train_fs = fs.transform(x_train)
-x_test_fs = fs.transform(x_test)
-
-for i in range(len(fs.scores_)):
-    print('Feature %d (%s): %f' % (i, feature_names[i], fs.scores_[i]))
-
-pyplot.bar([i for i in range(len(fs.scores_))], fs.scores_)
-pyplot.xticks(range(len(fs.scores_)), feature_names, rotation=45)
-pyplot.show()
-
-
-# ============================
-# PROGRAM 4
-# ============================
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.feature_selection import SelectKBest, chi2
-from sklearn.preprocessing import LabelEncoder
-
-df = pd.read_csv('loandata.csv')
-print(df.head())
-
-if 'Loan_ID' in df.columns:
-    df = df.drop('Loan_ID', axis=1)
-
-num_cols = ['LoanAmount', 'Loan_Amount_Term', 'ApplicantIncome', 'CoapplicantIncome']
-for col in num_cols:
-    if col in df.columns:
-        df[col] = df[col].fillna(df[col].mean())
-
-cat_cols = ['Gender', 'Married', 'Dependents', 'Self_Employed', 'Credit_History', 'Education', 'Property_Area']
-for col in cat_cols:
-    if col in df.columns:
-        df[col] = df[col].fillna(df[col].mode()[0])
-
-le = LabelEncoder()
-df['Loan_Status'] = le.fit_transform(df['Loan_Status'])
-
-for col in df.columns:
-    if df[col].dtype == 'object':
-        df[col] = le.fit_transform(df[col].astype(str))
-
-print(df.head())
-
-X = df.drop('Loan_Status', axis=1)
-y = df['Loan_Status']
-
-best_features = SelectKBest(score_func=chi2, k=min(10, len(X.columns)))
-fit = best_features.fit(X, y)
-
-df_scores = pd.DataFrame(fit.scores_)
-df_columns = pd.DataFrame(X.columns)
-
-feature_scores = pd.concat([df_columns, df_scores], axis=1)
-feature_scores.columns = ['Feature', 'Score']
-
-top_features = feature_scores.nlargest(10, 'Score')
-print(top_features)
-
-plt.figure(figsize=(12,6))
-plt.bar(top_features['Feature'], top_features['Score'])
-plt.xticks(rotation=45)
-plt.show()
-
-
-# ============================
-# PROGRAM 5
-# ============================
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-import seaborn as sns
-from sklearn import tree
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-
-iris = sns.load_dataset('iris')
-print(iris)
-
-x = iris.iloc[:,:-1]
-y = iris.iloc[:,-1]
-
-x_train, x_test, y_train, y_test = train_test_split(x,y,test_size=0.33, random_state=1)
-
-treemodel = DecisionTreeClassifier()
-treemodel.fit(x_train,y_train)
-
-y_pred = treemodel.predict(x_test)
-
-plt.figure(figsize=(20,30))
-tree.plot_tree(treemodel,filled=True)
-plt.show()
-
-print(classification_report(y_test,y_pred))
-
-cm = confusion_matrix(y_test,y_pred)
-print("Confusion Matrix:")
-print(cm)
-
-accuracy = accuracy_score(y_test,y_pred)
-print("Accuracy of Decision Tree Model:",accuracy)
-
-
-# ============================
-# PROGRAM 6
-# ============================
-import numpy as nm
-import matplotlib.pyplot as mtp
-import pandas as pd
-
-dataset = pd.read_csv('User_Data.csv')
-x= dataset.iloc[:,[2,3]].values
-print(x)
-y = dataset.iloc[:,4].values
-print(y)
-
-from sklearn.model_selection import train_test_split
-x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.25, random_state=0)
-
-from sklearn.preprocessing import StandardScaler
-sc= StandardScaler()
-x_train = sc.fit_transform(x_train)
-x_test = sc.fit_transform(x_test)
-
-from sklearn.naive_bayes import GaussianNB
-classifier = GaussianNB()
-classifier.fit(x_train , y_train)
-
-y_pred= classifier.predict(x_test)
-
-from sklearn.metrics import confusion_matrix, accuracy_score
-cm = confusion_matrix(y_test, y_pred)
-print("Confusion Matrix:")
-print(cm)
-
-accuracy = accuracy_score(y_test, y_pred)
-print("Accuracy of Decision Tree Model:", accuracy)
-
-
-# ============================
-# PROGRAM 7
-# ============================
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-
-dataset = pd.read_csv('Social_Network_Ads.csv')
-
-from sklearn.preprocessing import LabelEncoder
-if 'Gender' in dataset.columns:
-    le = LabelEncoder()
-    dataset['Gender'] = le.fit_transform(dataset['Gender'])
-
-X = dataset.iloc[:, [1, 2, 3]].values
-y = dataset.iloc[:, -1].values
-
-print(dataset.head())
-
-from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
-
-from sklearn.preprocessing import StandardScaler
-sc = StandardScaler()
-X_train = sc.fit_transform(X_train)
-X_test = sc.transform(X_test)
-
-print(X_train)
-
-from sklearn.neighbors import KNeighborsClassifier
-classifier = KNeighborsClassifier(n_neighbors=5, metric='minkowski', p=2)
-classifier.fit(X_train, y_train)
-
-custom_prediction = classifier.predict(sc.transform([[1, 46, 28000]]))
-print(custom_prediction)
-
-y_pred = classifier.predict(X_test)
-
-results = np.concatenate((y_pred.reshape(len(y_pred), 1), y_test.reshape(len(y_test), 1)),  axis=1)
-print(results)
-
-from sklearn.metrics import confusion_matrix, accuracy_score
-cm = confusion_matrix(y_test, y_pred)
-accuracy = accuracy_score(y_test, y_pred)
-
-print(cm)
-print(accuracy)
-
-
-# ============================
-# PROGRAM 8
-# ============================
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-
-dataset = pd.read_csv('salary_data.csv')
-x = dataset.iloc[:, :-1].values
-y = dataset.iloc[:,-1].values
-dataset.head()
-
-from sklearn.model_selection import train_test_split
-x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=1/3, random_state=0)
-
-print(x_train)
-print(x_test)
-print(y_train)
-print(y_test)
-
-from sklearn.linear_model import LinearRegression
-regressor=LinearRegression()
-regressor.fit(x_train,y_train)
-
-y_pred=regressor.predict(x_test)
-
-print(y_test)
-print(y_pred)
-
-print(np.concatenate((y_test.reshape(len(y_test),1),y_pred.reshape(len(y_pred),1)),1))
-
-from sklearn.metrics import mean_squared_error
-mean=mean_squared_error(y_test,y_pred)
-print(mean)
-
-plt.scatter(x_train,y_train,color='red')
-plt.plot(x_train,regressor.predict(x_train),color='blue')
-plt.show()
-
-plt.scatter(x_test, y_test, color = 'red')
-plt.plot(x_train, regressor.predict(x_train), color = 'blue')
-plt.show()
-
-
-# ============================
-# PROGRAM 9
-# ============================
-import numpy as np
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.compose import ColumnTransformer
-
-data = pd.read_csv('50_Startups.csv')
-df = pd.DataFrame(data)
-
-print(df.head())
-
-X = df.drop(columns=['Profit'])
-y = df['Profit']
-
-column_transformer = ColumnTransformer(
-transformers=[('encoder', OneHotEncoder(), ['State'])], remainder='passthrough')
-X = column_transformer.fit_transform(X)
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-model = LinearRegression()
-model.fit(X_train, y_train)
-
-y_pred = model.predict(X_test)
-
-mse = mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
-
-print(mse)
-print(r2)
-
-print("Coefficients:", model.coef_)
-print("Intercept:", model.intercept_)
-
-
-# ============================
-# PROGRAM 10
-# ============================
-import numpy as nm
-import matplotlib.pyplot as mtp
-import pandas as pd
-
-dataset = pd.read_csv('Mall_Customers.csv')
-x = dataset.iloc[:, [3, 4]].values
-dataset.head()
-
-import scipy.cluster.hierarchy as shc
-dendro = shc.dendrogram(shc.linkage(x, method="ward"))
-mtp.show()
-
-from sklearn.cluster import AgglomerativeClustering
-hc = AgglomerativeClustering(n_clusters=5, metric='euclidean', linkage='ward')
-y_pred = hc.fit_predict(x)
-
-mtp.scatter(x[y_pred == 0, 0], x[y_pred == 0, 1], s = 100, c = 'blue')
-mtp.scatter(x[y_pred == 1, 0], x[y_pred == 1, 1], s = 100, c = 'green')
-mtp.scatter(x[y_pred== 2, 0], x[y_pred == 2, 1], s = 100, c = 'red')
-mtp.scatter(x[y_pred == 3, 0], x[y_pred == 3, 1], s = 100, c = 'cyan')
-mtp.scatter(x[y_pred == 4, 0], x[y_pred == 4, 1], s = 100, c = 'magenta')
-mtp.show()
-
-
-# ============================
-# PROGRAM 11
-# ============================
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.cluster import DBSCAN
-from sklearn.preprocessing import StandardScaler
-
-df = pd.read_csv('Mall_Customers.csv')
-
-x_train = df[['Age', 'Annual Income (k$)', 'Spending Score (1-100)']]
-
-scaler = StandardScaler()
-x_scaled = scaler.fit_transform(x_train)
-
-dbscan = DBSCAN(eps=0.5, min_samples=5)
-y_dbscan = dbscan.fit_predict(x_scaled)
-
-df['Cluster'] = y_dbscan
-
-print(df['Cluster'].value_counts())
-
-plt.scatter(x_train['Annual Income (k$)'], x_train['Spending Score (1-100)'], c=y_dbscan, cmap='rainbow')
-plt.show()
+```c
+1. Write a C program for error detection using CRC-CCITT 
+(16-bits).  
+// Include headers   
+#include<stdio.h>   
+#include<string.h>   
+// length of the generator polynomial   
+#define N strlen(gen_poly)   
+// data to be transmitted and received   
+char data[28];   
+// CRC value   
+char check_value[28];   
+// generator polynomial   
+char gen_poly[10];   
+// variables    
+int data_length,i,j;   
+// function that performs XOR operation   
+void XOR(){   
+// if both bits are the same, the output is 0   
+// if the bits are different the output is 1   
+for(j = 1;j < N; j++)   
+check_value[j] = (( check_value[j] == gen_poly[j])?'0':'1');       
+}   
+// Function to check for errors on the receiver side   
+void receiver(){   
+// get the received data   
+    printf("Enter the received data: ");   
+    scanf("%s", data);   
+    printf("\n-----------------------------\n");   
+    printf("Data received: %s", data);   
+// Cyclic Redundancy Check   
+    crc();   
+// Check if the remainder is zero to find the error   
+    for(i=0;(i<N-1) && (check_value[i]!='1');i++);   
+        if(i<N-1)   
+          printf("\nError detected\n\n");   
+        else   
+            printf("\nNo error detected\n\n");   
+}   
+   
+void crc(){   
+    // initializing check_value   
+    for(i=0;i<N;i++)   
+        check_value[i]=data[i];   
+    do{   
+    // check if the first bit is 1 and calls XOR function   
+        if(check_value[0]=='1')   
+            XOR();   
+// Move the bits by 1 position for the next computation   
+        for(j=0;j<N-1;j++)   
+            check_value[j]=check_value[j+1];   
+        // appending a bit from data   
+        check_value[j]=data[i++];   
+    }while(i<=data_length+N-1);   
+// loop until the data ends   
+}   
+   
+int main()   
+{   
+    // get the data to be transmitted   
+    printf("\nEnter data to be transmitted: ");   
+    scanf("%s",data);   
+    printf("\n Enter the Generating polynomial: ");   
+    // get the generator polynomial   
+    scanf("%s",gen_poly);   
+    // find the length of data   
+    data_length=strlen(data);   
+    // appending n-1 zeros to the data   
+    for(i=data_length;i<data_length+N-1;i++)   
+        data[i]='0';   
+    printf("\n----------------------------------------");   
+// print the data with padded zeros   
+    printf("\n Data padded with n-1 zeros : %s",data);   
+    printf("\n----------------------------------------");   
+// Cyclic Redundancy Check   
+    crc();   
+// print the computed check value   
+    printf("\nCRC or Check value is : %s",check_value);   
+// Append data with check_value(CRC)     
+    for(i=data_length;i<data_length+N-1;i++)   
+        data[i]=check_value[i-data_length];   
+    printf("\n----------------------------------------");   
+// printing the final data to be sent   
+    printf("\n Final data to be sent : %s",data);   
+    printf("\n----------------------------------------\n");   
+// Calling the receiver function to check errors   
+    receiver();   
+        return 0;   
+}  
+2. Write a C program to generate Hamming Code for error 
+detection and correction.  
+#include <stdio.h> 
+#include <math.h> 
+int input[32]; 
+int code[32]; 
+int ham_calc(int,int); 
+void main() 
+{ 
+ int n,i,p_n = 0,c_l,j,k; 
+ printf("Please enter the length of the Data Word: "); 
+ scanf("%d",&n); 
+ printf("Please enter the Data Word:\n"); 
+ for(i=0;i<n;i++) 
+ { 
+  scanf("%d",&input[i]); 
+ } 
+ 
+ i=0; 
+ while(n>(int)pow(2,i)-(i+1)) 
+ { 
+  p_n++; 
+  i++; 
+ } 
+ c_l = p_n + n; 
+ j=k=0; 
+ for(i=0;i<c_l;i++) 
+ { 
+   
+  if(i==((int)pow(2,k)-1)) 
+  { 
+   code[i]=0; 
+   k++; 
+  } 
+  else 
+  { 
+   code[i]=input[j]; 
+   j++; 
+  } 
+ } 
+ for(i=0;i<p_n;i++) 
+ { 
+  int position = (int)pow(2,i); 
+  int value = ham_calc(position,c_l); 
+  code[position-1]=value; 
+ } 
+ printf("\nThe calculated Code Word is: "); 
+ for(i=0;i<c_l;i++) 
+  printf("%d",code[i]); 
+ printf("\n"); 
+ printf("Please enter the received Code Word:\n"); 
+ for(i=0;i<c_l;i++) 
+  scanf("%d",&code[i]); 
+ 
+ int error_pos = 0; 
+ for(i=0;i<p_n;i++) 
+ { 
+  int position = (int)pow(2,i); 
+  int value = ham_calc(position,c_l); 
+  if(value != 0) 
+   error_pos+=position; 
+ } 
+ if(error_pos == 1) 
+  printf("The received Code Word is correct.\n"); 
+ else 
+  printf("Error at bit position: %d\n",error_pos); 
+} 
+int ham_calc(int position,int c_l) 
+{ 
+ int count=0,i,j; 
+ i=position-1; 
+ while(i<c_l) 
+ { 
+  for(j=i;j<i+position;j++) 
+  { 
+   if(code[j] == 1) 
+    count++; 
+  } 
+  i=i+2*position; 
+ } 
+ if(count%2 == 0) 
+  return 0; 
+ else 
+  return 1; 
+}
+3. Write a C program to implement Distance vector Routing 
+algorithm
+ 
+#include<stdio.h> 
+int dist[50][50],temp[50][50],n,i,j,k,x; 
+void dvr(); 
+int main() 
+{ 
+    printf("\nEnter the number of nodes : "); 
+    scanf("%d",&n); 
+    printf("\nEnter the distance matrix :\n"); 
+    for(i=0;i<n;i++) 
+    { 
+        for(j=0;j<n;j++) 
+        {    
+            scanf("%d",&dist[i][j]); 
+            dist[i][i]=0; 
+            temp[i][j]=j; 
+        } 
+        printf("\n"); 
+ } 
+     dvr();  
+     printf("enter value of i &j:"); 
+     scanf("%d",&i); 
+  scanf("%d",&j);    
+  printf("enter the new cost"); 
+  scanf("%d",&x);    
+  dist[i][j]=x; 
+  printf("After update\n\n");      
+     dvr(); 
+  return 0;  
+} 
+void dvr() 
+{ 
+ for (i = 0; i < n; i++) 
+            for (j = 0; j < n; j++) 
+             for (k = 0; k < n; k++) 
+                 if (dist[i][k] + dist[k][j] < dist[i][j]) 
+                 { 
+                     dist[i][j] = dist[i][k] + dist[k][j]; 
+                     temp[i][j] = k; 
+                 } 
+                  
+ for(i=0;i<n;i++) 
+        { 
+            printf("\n\nState value for router %d is \n",i+1); 
+            for(j=0;j<n;j++) 
+                printf("\t\nnode %d via %d Distance%d",j+1,temp[i][j]+1,dist[i][j]); 
+        }    
+    printf("\n\n"); 
+ 
+}
+4. Write a C program to implement Open Shortest Path First 
+Routing Algorithm 
+ 
+  #include <stdio.h> 
+  #include <string.h> 
+  int main() 
+  { 
+  int count,src_router,i,j,k,w,v,min; 
+  int cost_matrix[100][100],dist[100],last[100]; 
+  int flag[100]; 
+   printf("\n Enter the no of routers"); 
+  scanf("%d",&count);  
+  printf("\n Enter the cost matrix values:"); 
+  for(i=0;i<count;i++) 
+  { 
+  for(j=0;j<count;j++) 
+  { 
+   printf("\n%d->%d:",i,j); 
+  scanf("%d",&cost_matrix[i][j]); 
+  if(cost_matrix[i][j]<0)cost_matrix[i][j]=1000; 
+  } 
+  } 
+   printf("\n Enter the source router:"); 
+  scanf("%d",&src_router); 
+  for(v=0;v<count;v++) 
+  { 
+  flag[v]=0; 
+  last[v]=src_router; 
+  dist[v]=cost_matrix[src_router][v]; 
+  } 
+  flag[src_router]=1; 
+  for(i=0;i<count;i++) 
+  { 
+  min=1000; 
+  for(w=0;w<count;w++) 
+  { 
+  if(!flag[w]) 
+  if(dist[w]<min) 
+  { 
+  v=w; 
+  min=dist[w]; 
+  } 
+  } 
+  flag[v]=1; 
+  for(w=0;w<count;w++) 
+  { 
+  if(!flag[w]) 
+  if(min+cost_matrix[v][w]<dist[w]) 
+  { 
+  dist[w]=min+cost_matrix[v][w]; 
+  last[w]=v; 
+  } 
+  } 
+  } 
+  for(i=0;i<count;i++) 
+  { 
+   printf("\n%d==>%d:Path taken:%d",src_router,i,i); 
+  w=i; 
+  while(w!=src_router) 
+  { 
+   printf("\n<--%d",last[w]);w=last[w]; 
+  } 
+printf("\n Shortest path cost:%d",dist[i]); 
+} 
+}
+5. Write a C Program to implement Border Gateway Protocol 
+(BGP) 
+#include <stdio.h> 
+#include<conio.h> 
+int main() 
+{ 
+int n; 
+int i,j,k; 
+int a[10][10],b[10][10]; 
+printf("\n Enter the number of nodes:"); 
+scanf("%d",&n); 
+for(i=0;i<n;i++) 
+{ 
+for(j=0;j<n;j++) 
+{ 
+printf("\n Enter the distance between the host %d - %d:",i+1,j+1); 
+scanf("%d",&a[i][j]); 
+}} 
+for(i=0;i<n;i++) 
+{ 
+for(j=0;j<n;j++) 
+{ 
+printf("%d\t",a[i][j]); 
+} 
+printf("\n"); 
+} 
+for(k=0;k<n;k++) 
+{ 
+for(i=0;i<n;i++) 
+{ 
+for(j=0;j<n;j++) 
+{ 
+if(a[i][j]>a[i][k]+a[k][j]) 
+{ 
+a[i][j]=a[i][k]+a[k][j]; 
+}}}} 
+for(i=0;i<n;i++) 
+{ 
+for(j=0;j<n;j++) 
+{ 
+b[i][j]=a[i][j]; 
+if(i==j) 
+{ 
+b[i][j]=0; 
+} 
+}} 
+printf("\n The output matrix:\n"); 
+for(i=0;i<n;i++) 
+{ 
+for(j=0;j<n;j++) 
+{ 
+printf("%d\t",b[i][j]); 
+} 
+printf("\n"); 
+} 
+getch(); 
+}
 ```
