@@ -1,0 +1,183 @@
+6
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class Webpage {
+    public static void main(String[] args) {
+
+        WebDriver driver = new ChromeDriver();
+
+        driver.get("https://the-internet.herokuapp.com/login");
+
+        driver.manage().window().maximize();
+
+        WebElement username = driver.findElement(By.id("username"));
+        username.sendKeys("tomsmith");
+
+        WebElement password = driver.findElement(By.id("password"));
+        password.sendKeys("SuperSecretPassword!");
+
+        WebElement loginBtn = driver.findElement(By.id("submit"));
+        loginBtn.click();
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        driver.quit();
+    }
+}
+
+7
+import java.io.File;
+
+public class DesktopItemCounter {
+    public static void main(String[] args) {
+
+        String desktopPath = System.getProperty("user.home") + "\\Desktop";
+
+        File desktopFolder = new File(desktopPath);
+
+        if (desktopFolder.exists() && desktopFolder.isDirectory()) {
+
+            File[] items = desktopFolder.listFiles();
+
+            if (items != null) {
+
+                System.out.println("Number of items on Desktop: " + items.length);
+
+                for (File item : items) {
+                    System.out.println("- " + item.getName());
+                }
+
+            } else {
+                System.out.println("could not read contents of Desktop");
+            }
+
+        } else {
+            System.out.println("Desktop folder not found at :" + desktopPath);
+        }
+    }
+}
+
+
+
+9
+
+package webpage;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import java.util.List;
+
+public class Objects {
+    public static void main(String[] args) {
+
+        WebDriver driver = new ChromeDriver();
+
+        try {
+
+            driver.get("https://example.com");
+
+            driver.manage().window().maximize();
+
+            Thread.sleep(10000);
+
+            List<WebElement> allElements = driver.findElements(By.xpath("//*"));
+
+            System.out.println("Total number of objects on the page: " + allElements.size());
+
+            for (WebElement element : allElements) {
+                System.out.println("- <" + element.getTagName() + ">");
+            }
+
+        } catch (InterruptedException e) {
+
+            System.out.println("Thread interrupted: " + e.getMessage());
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            driver.quit();
+        }
+    }
+}
+
+
+
+
+10
+<!DOCTYPE html>
+<html>
+<head>
+<title> Combo Box Test </title>
+</head>
+<body>
+<h2> Select your option: </h2>
+<select id = MyDropdown">
+<option value = "1"> option One </option>
+<option value = "2"> option Two </option>
+<option value = "3"> option Three </option>
+</select>
+</body>
+</html>
+
+package stlab4;
+
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
+
+public class Combobox {
+    public static void main(String[] args) {
+
+
+        ChromeDriver driver = new ChromeDriver();
+
+        try {
+            driver.get("file:///C:\\Users/aayud/Dropbox/My PC (LAPTOP-G96H3MML)/Desktop/combo.html");
+            driver.manage().window().maximize();
+
+            // Wait for 30 seconds
+            Thread.sleep(30000);
+
+            // Locate dropdown
+            WebElement dropdown = driver.findElement(By.tagName("select"));
+
+            // Create Select object
+            Select select = new Select(dropdown);
+
+            // Get all options
+            List<WebElement> options = select.getOptions();
+
+            // Print count
+            System.out.println("Number of options in the combo box is: " + options.size());
+
+            // Print each option
+            for (WebElement option : options) {
+                System.out.println("- " + option.getText());
+            }
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            driver.quit();
+        }
+    }
+}
