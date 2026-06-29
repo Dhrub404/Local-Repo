@@ -1,3 +1,313 @@
+/* ===================== PROGRAM 1 ===================== */
+#include <stdio.h>
+
+int main() {
+    int c1, c2, c3, temp;
+    int locks, stocks, barrels, totallocks, totalstocks, totalbarrels;
+    float lockprice, stockprice, barrelprice;
+    float locksales, stocksales, barrelsales, sales, com;
+
+    lockprice  = 45.0;
+    stockprice = 30.0;
+    barrelprice = 25.0;
+    totallocks  = 0;
+    totalstocks = 0;
+    totalbarrels = 0;
+
+    printf("Enter the number of locks (to exit press -1): ");
+    scanf("%d", &locks);
+
+    while (locks != -1) {
+        c1 = (locks <= 0 || locks > 70);
+
+        printf("Enter the number of stocks and barrels: ");
+        scanf("%d %d", &stocks, &barrels);
+
+        c2 = (stocks <= 0 || stocks > 80);
+        c3 = (barrels <= 0 || barrels > 90);
+
+        // Locks validation
+        if (c1) {
+            printf("Value of locks is out of range (1 - 70)\n");
+        } else {
+            temp = totallocks + locks;
+            if (temp > 70)
+                printf("New total locks = %d, out of range (1 - 70)\n", temp);
+            else
+                totallocks = temp;
+        }
+        printf("Total locks   = %d\n", totallocks);
+
+        // Stocks validation
+        if (c2) {
+            printf("Value of stocks is out of range (1 - 80)\n");
+        } else {
+            temp = totalstocks + stocks;
+            if (temp > 80)
+                printf("New total stocks = %d, out of range (1 - 80)\n", temp);
+            else
+                totalstocks = temp;
+        }
+        printf("Total stocks  = %d\n", totalstocks);
+
+        // Barrels validation
+        if (c3) {
+            printf("Value of barrels is out of range (1 - 90)\n");
+        } else {
+            temp = totalbarrels + barrels;
+            if (temp > 90)
+                printf("New total barrels = %d, out of range (1 - 90)\n", temp);
+            else
+                totalbarrels = temp;
+        }
+        printf("Total barrels = %d\n", totalbarrels);
+
+        printf("\nEnter the number of locks (to exit press -1): ");
+        scanf("%d", &locks);
+    }
+
+    // Final totals
+    printf("\nTotal locks   = %d\n", totallocks);
+    printf("Total stocks  = %d\n", totalstocks);
+    printf("Total barrels = %d\n", totalbarrels);
+
+    // Sales calculation
+    locksales   = totallocks   * lockprice;
+    stocksales  = totalstocks  * stockprice;
+    barrelsales = totalbarrels * barrelprice;
+    sales = locksales + stocksales + barrelsales;
+    printf("\nTotal sales = %.2f\n", sales);
+
+    // Commission calculation
+    if (sales > 1800) {
+        com  = 0.10 * 1000;
+        com += 0.15 * 800;
+        com += 0.20 * (sales - 1800);
+    } else if (sales > 1000) {
+        com  = 0.10 * 1000;
+        com += 0.15 * (sales - 1000);
+    } else {
+        com = 0.10 * sales;
+    }
+    printf("Commission  = %.2f\n", com);
+
+    printf("\nPress Enter to exit...");
+    getchar(); getchar();
+
+    return 0;
+}
+
+/* ===================== PROGRAM 2 ===================== */
+#include <stdio.h>
+
+int main() {
+    int month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int d, m, y, nd, nm, ny, ndays;
+
+    printf("Enter the date, month, year: ");
+    scanf("%d %d %d", &d, &m, &y);
+
+    // Validate year
+    if (y < 1812 || y > 2012) {
+        printf("Invalid Input Year\n");
+        return 1;
+    }
+
+    // Validate month
+    if (m < 1 || m > 12) {
+        printf("Invalid Input Month\n");
+        return 1;
+    }
+
+    // Check for leap year in February
+    if (m == 2) {
+        if (y % 100 == 0) {
+            if (y % 400 == 0)
+                month[1] = 29;
+        } else if (y % 4 == 0) {
+            month[1] = 29;
+        }
+    }
+
+    ndays = month[m - 1];
+
+    // Validate day
+    if (d <= 0 || d > ndays) {
+        printf("Invalid Input Day\n");
+        return 1;
+    }
+
+    // Calculate next day
+    nd = d + 1;
+    nm = m;
+    ny = y;
+
+    if (nd > ndays) {
+        nd = 1;
+        nm++;
+    }
+
+    if (nm > 12) {
+        nm = 1;
+        ny++;
+    }
+
+    printf("\nGiven date     : %d/%d/%d\n", d, m, y);
+    printf("Next day's date: %d/%d/%d\n", nd, nm, ny);
+
+    printf("\nPress Enter to exit...");
+    getchar(); getchar();
+
+    return 0;
+}
+
+/* ===================== PROGRAM 3 ===================== */
+#include <stdio.h>
+
+int main() {
+    int locks, stocks, barrels, t_sales, flag = 0;
+    float commission;
+
+    printf("Enter the total number of locks: ");
+    scanf("%d", &locks);
+    if (locks <= 0 || locks > 70) {
+        flag = 1;
+        printf("Value of locks is out of range\n");
+    }
+
+    printf("Enter the total number of stocks: ");
+    scanf("%d", &stocks);
+    if (stocks <= 0 || stocks > 80) {
+        flag = 1;
+        printf("Value of stocks is out of range\n");
+    }
+
+    printf("Enter the total number of barrels: ");
+    scanf("%d", &barrels);
+    if (barrels <= 0 || barrels > 90) {
+        flag = 1;
+        printf("Value of barrels is out of range\n");
+    }
+
+    if (flag == 1) {
+        printf("Invalid input. Exiting...\n");
+        return 1;
+    }
+
+    t_sales = (locks * 45) + (stocks * 30) + (barrels * 25);
+
+    if (t_sales <= 1000) {
+        commission = 0.10 * t_sales;
+    } else if (t_sales < 1800) {
+        commission = (0.10 * 1000);
+        commission += (0.15 * (t_sales - 1000));
+    } else {
+        commission = (0.10 * 1000);
+        commission += (0.15 * 800);
+        commission += (0.20 * (t_sales - 1800));
+    }
+
+    printf("\nTotal sales  : %d\n", t_sales);
+    printf("Commission   : %.2f\n", commission);
+
+    printf("\nPress Enter to exit...");
+    getchar(); getchar();
+
+    return 0;
+}
+
+/* ===================== PROGRAM 4 ===================== */
+#include <stdio.h>
+
+int main() {
+    int month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int d, m, y, nd, nm, ny, ndays;
+
+    printf("Enter the date, month, year: ");
+    scanf("%d %d %d", &d, &m, &y);
+
+    if (y < 1812 || y > 2012) {
+        printf("Invalid Input Year\n");
+        return 1;
+    }
+
+    if (m < 1 || m > 12) {
+        printf("Invalid Input Month\n");
+        return 1;
+    }
+
+    if (m == 2) {
+        if (y % 100 == 0) {
+            if (y % 400 == 0)
+                month[1] = 29;
+        } else if (y % 4 == 0) {
+            month[1] = 29;
+        }
+    }
+
+    ndays = month[m - 1];
+
+    if (d <= 0 || d > ndays) {
+        printf("Invalid Input Day\n");
+        return 1;
+    }
+
+    nd = d + 1;
+    nm = m;
+    ny = y;
+
+    if (nd > ndays) {
+        nd = 1;
+        nm++;
+    }
+
+    if (nm > 12) {
+        nm = 1;
+        ny++;
+    }
+
+    printf("\nGiven date     : %d/%d/%d\n", d, m, y);
+    printf("Next day's date: %d/%d/%d\n", nd, nm, ny);
+
+    return 0;
+}
+
+/* ===================== PROGRAM 5 ===================== */
+#include <stdio.h>
+
+int main() {
+    int a, b, c, c1, c2, c3;
+
+    do {
+        printf("Enter sides of triangle: ");
+        scanf("%d %d %d", &a, &b, &c);
+
+        c1 = (a >= 1 && a <= 10);
+        c2 = (b >= 1 && b <= 10);
+        c3 = (c >= 1 && c <= 10);
+
+        if (!c1) printf("Value of a is out of range\n");
+        if (!c2) printf("Value of b is out of range\n");
+        if (!c3) printf("Value of c is out of range\n");
+
+    } while (!c1 || !c2 || !c3);
+
+    if ((a + b) > c && (b + c) > a && (c + a) > b) {
+        if (a == b && b == c)
+            printf("Triangle is Equilateral\n");
+        else if (a != b && b != c && c != a)
+            printf("Triangle is Scalene\n");
+        else
+            printf("Triangle is Isosceles\n");
+    } else {
+        printf("Triangle can't be formed\n");
+    }
+
+    return 0;
+}
+
+
+
 6
 
 import org.openqa.selenium.By;
@@ -64,6 +374,77 @@ public class DesktopItemCounter {
         }
     }
 }
+
+
+
+
+
+8
+package lab8;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+public class UpdateExcel {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	        try {
+	            // Excel file path
+	            String filePath = "C:\\Users\\Admin\\OneDrive\\Desktop\\students.xlsx";
+
+	            FileInputStream fis = new FileInputStream(filePath);
+	            XSSFWorkbook workbook = new XSSFWorkbook(fis);
+	            XSSFSheet sheet = workbook.getSheetAt(0);
+
+	            // Student records
+	            Object[][] data = {
+	                    {101, "Amit", "CSE", 85},
+	                    {102, "Riya", "ECE", 90},
+	                    {103, "Kiran", "ME", 78},
+	                    {104, "Sneha", "EEE", 88},
+	                    {105, "Rahul", "Civil", 82},
+	                    {106, "Pooja", "ISE", 91}
+	            };
+
+	            // Update records
+	            for (int i = 0; i < data.length; i++) {
+
+	                Row row = sheet.getRow(i + 1);
+
+	                if (row == null) {
+	                    row = sheet.createRow(i + 1);
+	                }
+
+	                row.createCell(0).setCellValue((Integer) data[i][0]);
+	                row.createCell(1).setCellValue((String) data[i][1]);
+	                row.createCell(2).setCellValue((String) data[i][2]);
+	                row.createCell(3).setCellValue((Integer) data[i][3]);
+	            }
+
+	            fis.close();
+
+	            FileOutputStream fos = new FileOutputStream(filePath);
+	            workbook.write(fos);
+
+	            fos.close();
+	            workbook.close();
+
+	            System.out.println("6 Student records updated successfully.");
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    
+	}
+
+}
+
 
 
 
